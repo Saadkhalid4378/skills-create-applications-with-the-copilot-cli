@@ -43,6 +43,28 @@ function exitWithError(msg, code = 1) {
   process.exit(code);
 }
 
+// Exported arithmetic functions for testing and reuse
+function addNumbers(a, b) {
+  if (!isNumeric(a) || !isNumeric(b)) throw new TypeError('Operands must be numbers');
+  return a + b;
+}
+
+function subtractNumbers(a, b) {
+  if (!isNumeric(a) || !isNumeric(b)) throw new TypeError('Operands must be numbers');
+  return a - b;
+}
+
+function multiplyNumbers(a, b) {
+  if (!isNumeric(a) || !isNumeric(b)) throw new TypeError('Operands must be numbers');
+  return a * b;
+}
+
+function divideNumbers(a, b) {
+  if (!isNumeric(a) || !isNumeric(b)) throw new TypeError('Operands must be numbers');
+  if (b === 0) throw new Error('Division by zero');
+  return a / b;
+}
+
 function main(argv) {
   if (argv.length === 0 || argv.includes('--help') || argv.includes('-h')) {
     printHelp();
@@ -62,24 +84,25 @@ function main(argv) {
   }
 
   let result;
-  switch (cmd.toLowerCase()) {
-    case 'add':
-      result = a + b;
-      break;
-    case 'subtract':
-      result = a - b;
-      break;
-    case 'multiply':
-      result = a * b;
-      break;
-    case 'divide':
-      if (b === 0) {
-        exitWithError('Error: division by zero is not allowed.');
-      }
-      result = a / b;
-      break;
-    default:
-      exitWithError(`Error: unknown command '${cmd}'. Supported commands: add, subtract, multiply, divide.`);
+  try {
+    switch (cmd.toLowerCase()) {
+      case 'add':
+        result = addNumbers(a, b);
+        break;
+      case 'subtract':
+        result = subtractNumbers(a, b);
+        break;
+      case 'multiply':
+        result = multiplyNumbers(a, b);
+        break;
+      case 'divide':
+        result = divideNumbers(a, b);
+        break;
+      default:
+        exitWithError(`Error: unknown command '${cmd}'. Supported commands: add, subtract, multiply, divide.`);
+    }
+  } catch (err) {
+    exitWithError(`Error: ${err.message}`);
   }
 
   // Print numeric result to stdout
@@ -96,4 +119,4 @@ if (require.main === module) {
   main(process.argv.slice(2));
 }
 
-module.exports = { main };
+module.exports = { main, addNumbers, subtractNumbers, multiplyNumbers, divideNumbers };
